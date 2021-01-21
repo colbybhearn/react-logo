@@ -5,7 +5,7 @@ class Canvas extends React.Component{
 
     render(){
         return (
-            <div>
+            <div className='canvasContainer'>
                 Canvas goes below
                 <canvas>
 

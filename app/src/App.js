@@ -1,29 +1,51 @@
+import React from 'react'
 import logo from './logo.svg';
 import './App.css';
-import Instructions from './Components/Instructions.js'
+import InstructionList from './Components/InstructionList.js'
 import Canvas from './Components/Canvas.js'
+import Input from './Components/Input.js'
+class App extends React.Component{
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-      <Instructions />
-      <Canvas />
-    </div>
-  );
+  constructor(){
+    super();
+    this.state = {
+      instructions: [],
+    }
+    console.log(this.state.instructions);
+  }
+
+  addInstruction = (i) =>{
+
+    const {instructions} = this.state;
+    let newItem = {
+      id: instructions.length,
+      text: i
+    }
+    this.setState({
+      
+      instructions: instructions.concat(        newItem      )
+    });
+    console.log(this.state.instructions);
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <div className='left'>
+        <header>Instructions</header>
+        <Input addInstruction={this.addInstruction}/>
+        <InstructionList instructions={this.state.instructions}/>
+        
+        </div>
+        <div className='right'>
+          <Canvas />
+
+        </div>
+        
+      </div>
+    );
+  }
 }
+
 
 export default App;
