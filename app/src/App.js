@@ -141,6 +141,18 @@ class App extends React.Component{
   }
 
   componentDidMount(){
+
+  }
+
+  clearInstructions = () => {
+    this.setState({
+      instructions: []
+    })
+  }
+
+  loadSampleDisc = () =>{
+    this.clearInstructions();
+
     setTimeout(()=>{
       this.addInstruction("FD 200")
       this.addInstruction("RT")
@@ -152,8 +164,9 @@ class App extends React.Component{
       this.addInstruction("RT 5")
       this.addInstruction("REP 8 91")
     }, 100)
-    
   }
+
+  
 
 
   getInstructionById = (id) => {
@@ -180,6 +193,10 @@ class App extends React.Component{
       <div className="App">
         
         <div className='left'>
+          <header>Presets</header>
+          <button onClick={this.clearInstructions}>clear</button>
+          <button onClick={this.loadSampleDisc}>disc</button>
+          <br/>
           <header>Instructions</header>
           <Input addInstruction={this.addInstruction}/>
           <InstructionList instructions={this.state.instructions} instChange={this.updateInst}/>
