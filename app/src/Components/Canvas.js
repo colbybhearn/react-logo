@@ -11,11 +11,17 @@ class Canvas extends React.Component{
         this.props.instructions.forEach((inst) => {            
             this.processInstruction(inst);
         });
+
         if(this.penDown)
             this.ctx.stroke(); // draw the last path
     }
 
     processInstruction = (inst) => {
+
+        if(inst.turtle){            
+            this.drawTurtle(inst);
+            return;
+        }
 
         let adjP = {
             x: this.pos.x + inst.pos.x,
@@ -46,61 +52,71 @@ class Canvas extends React.Component{
         }
     }
 
-    drawTurtle = () => {
-        
-        this.ctx.moveTo(this.pos.x,this.pos.x);
+    drawTurtle = (inst) => {
+
+        let {angle} = inst;
+
+        let adjP = {
+            x: this.pos.x + inst.pos.x,
+            y: this.pos.y - inst.pos.y
+        };
+
+        if(this.penDown)
+            this.ctx.stroke();
+
+        console.log(inst);
+        this.ctx.moveTo(adjP.x,adjP.y);
         this.ctx.beginPath();
         const turtleRadius = 10;
-
         
-        let angle = this.angle-180;
         const p0Delta = {
             x: .5*turtleRadius * Math.cos(angle*Math.PI/180),
-            y: .5*turtleRadius * -Math.sin(angle*Math.PI/180)
+            y: .5*turtleRadius * Math.sin(angle*Math.PI/180)
           };
 
-        this.pos.x+=p0Delta.x;
-        this.pos.y+=p0Delta.y;
+        adjP.x+=p0Delta.x;
+        adjP.y-=p0Delta.y;
 
-        angle = this.angle+110;
+        angle = angle+140;
         const p1Delta = {
             x: 1.5*turtleRadius * Math.cos(angle*Math.PI/180),
-            y: 1.5*turtleRadius * -Math.sin(angle*Math.PI/180)
+            y: 1.5*turtleRadius * Math.sin(angle*Math.PI/180)
           };
 
         let p1= {
-            x: this.pos.x +p1Delta.x,
-            y: this.pos.y +p1Delta.y
+            x: adjP.x +p1Delta.x,
+            y: adjP.y -p1Delta.y
         }
 
-        angle = this.angle
+        angle += 40
         const p2Delta = {
-            x: 2*turtleRadius * Math.cos(angle*Math.PI/180),
-            y: 2*turtleRadius * -Math.sin(angle*Math.PI/180)
+            x: .75*turtleRadius * Math.cos(angle*Math.PI/180),
+            y: .75*turtleRadius * Math.sin(angle*Math.PI/180)
           };
 
         let p2= {
-            x: this.pos.x +p2Delta.x,
-            y: this.pos.y +p2Delta.y
+            x: adjP.x +p2Delta.x,
+            y: adjP.y -p2Delta.y
         }
         
-        angle = this.angle+-110
+        angle = angle+40
         const p3Delta = {
             x: 1.5*turtleRadius * Math.cos(angle*Math.PI/180),
-            y: 1.5*turtleRadius * -Math.sin(angle*Math.PI/180)
+            y: 1.5*turtleRadius * Math.sin(angle*Math.PI/180)
           };
 
         let p3= {
-            x: this.pos.x +p3Delta.x,
-            y: this.pos.y +p3Delta.y
+            x: adjP.x +p3Delta.x,
+            y: adjP.y -p3Delta.y
         }
         
         this.ctx.lineTo(p1.x,p1.y);
         this.ctx.lineTo(p2.x,p2.y);
         this.ctx.lineTo(p3.x,p3.y);
-        this.ctx.lineTo(this.pos.x,this.pos.y);
+        this.ctx.lineTo(adjP.x,adjP.y);
         this.ctx.closePath();
         this.ctx.stroke();
+        //this.penDown=false;
     }    
 
     componentDidMount = () =>{        

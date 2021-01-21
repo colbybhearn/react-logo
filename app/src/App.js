@@ -10,7 +10,8 @@ class App extends React.Component{
     super();
     this.state = {
       instructions: [],
-      commandTemplates: this.getCommandTemplates()
+      commandTemplates: this.getCommandTemplates(),
+      showTurtle: true
     }
     this.initData();
     
@@ -127,12 +128,15 @@ class App extends React.Component{
       if(l3)
         l3s.push(l3);
     });    
-    /*
-    if(this.showTurtle)
+    
+    if(this.state.showTurtle)
+      if(l3s.length>0)
       l3s.push({
-        pos: this.data.pos,
-        turtle: this.data.angle
-      })*/
+        pos: l3s[l3s.length-1].pos,
+        turtle: true,
+        angle: this.data.angle        
+      })
+
     return l3s;
   }
 
@@ -166,7 +170,16 @@ class App extends React.Component{
     }, 100)
   }
 
-  
+  loadSampleCorner = () => {
+    this.clearInstructions();
+    
+    setTimeout(()=>{
+      this.addInstruction("FD 200")
+      this.addInstruction("RT")
+      this.addInstruction("FD 200")
+    }, 100)
+
+  }
 
 
   getInstructionById = (id) => {
@@ -228,19 +241,32 @@ class App extends React.Component{
           <header>Presets</header>
           <button onClick={this.clearInstructions}>clear</button>
           <button onClick={this.loadSampleDisc}>disc</button>
+          <button onClick={this.loadSampleCorner}>corner</button>
           <br/><br/>
 
           <header>Instructions</header>
           <Input addInstruction={this.addInstruction}/>
           <InstructionList instructions={this.state.instructions} instChange={this.updateInst}/>
+          <input type='checkbox' checked="true" 
+          checked={this.state.showTurtle}
+          onChange={this.handleTurtleToggle}
+          />Draw Turtle
         </div>
 
         <div className='right'>
-          <Canvas instructions={l3Instructions} commandTemplates={this.commandTemplates} />
+          <Canvas instructions={l3Instructions} commandTemplates={this.commandTemplates} turtle={this.state.showTurtle}/>
         </div>
         
       </div>
     );
+  }
+
+  handleTurtleToggle = (event) => {
+    this.setState(
+      {
+        showTurtle: event.target.checked
+      }
+    )
   }
 
   getCommandTemplates = () => {
