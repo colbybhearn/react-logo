@@ -23,12 +23,17 @@ class Input extends React.Component{
         })
       }
 
+    processKey = event => {
+        if(event.code === 'Enter')
+            this.addInstruction();
+    }
+
     render(){
         return (
             <div>
                 <input type='text' placeholder='Next Instruction' 
-                onChange={this.handleChange} value={this.state.text} name='text'/>
-                <button onClick={this.addInstruction}>Add</button>
+                onChange={this.handleChange} onKeyDown={this.processKey} value={this.state.text} name='text'/>
+                <button onClick={this.addInstruction} >Add</button>
                 
             </div>
         )
