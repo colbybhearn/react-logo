@@ -30,10 +30,10 @@ class Input extends React.Component{
 
     render(){
         return (
-            <div>
-                <input type='text' placeholder='Next Instruction' 
+            <div className='instInput'>
+                <input className="instInput" type='text' placeholder='Next Instruction' 
                 onChange={this.handleChange} onKeyDown={this.processKey} value={this.state.text} name='text'/>
-                <button onClick={this.addInstruction} >Add</button>
+                {/* <button onClick={this.addInstruction} >Add</button> */}
                 
             </div>
         )

@@ -2,18 +2,29 @@ import React from 'react'
 
 class Instruction extends React.Component{
 
-    render(){
 
+    handleChange = (event, argName) => {
+        console.log(event, argName)
+        this.props.changed(this.props.inst.id, argName, event.target.value);
+    }
+
+    render(){
         const args =Object.entries(this.props.inst.args);
         console.log(args);
+
         return (
             <div className='instruction'>
                 {/* <input type='checkbox' /> */}
                 
-                {this.props.inst.command}
+                <span style={{margin: 10+'px'}}>{this.props.inst.command}</span>
                 
-                 {args.map((arg,i) => (
-                    <input key={i} type='number' value={this.props.inst.args[i]} style={{width: 40 + 'px'}} />
+                
+                 {
+                 args.map((arg,i) => (
+                     <div className='instructionArgs'>
+                        <span>{arg[0]}</span>
+                        <input key={i} type='number' defaultValue={arg[1]} style={{width: 40 + 'px'}} onChange={(event) => {this.handleChange(event, arg[0])}} />
+                    </div>
                 ))} 
                 <div className='delete'>X</div>
             </div>

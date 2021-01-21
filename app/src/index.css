@@ -49,3 +49,12 @@ canvas{
   width:800px;
   height:800px;
 }
+
+.instructionArgs{
+
+  display:inline-block;
+}
+
+.instInput{
+  width:100%
+}

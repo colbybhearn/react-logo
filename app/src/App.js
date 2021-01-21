@@ -92,6 +92,7 @@ class App extends React.Component{
       getL2: commandTemplate.getL2,
       getL3: commandTemplate.getL3,
       copy: commandTemplate.copy,
+      setArg: commandTemplate.setArg
       //do: commandTemplate.do
     }
   }
@@ -141,16 +142,33 @@ class App extends React.Component{
 
   componentDidMount(){
     setTimeout(()=>{
-      this.addInstruction("GO 200")
-      this.addInstruction("TR")
-      this.addInstruction("GO 200")
-      this.addInstruction("TR")
-      this.addInstruction("GO 200")
-      this.addInstruction("TR")
-      this.addInstruction("GO 200")
-      this.addInstruction("TR 5")      
-      this.addInstruction("REP 8 91")
+      this.addInstruction("FD 200")
+      //this.addInstruction("TR")
+      //this.addInstruction("GO 200")
+      //this.addInstruction("TR")
+      //this.addInstruction("GO 200")
+      //this.addInstruction("TR")
+      //this.addInstruction("GO 200")
+      //this.addInstruction("TR 5")
+      //this.addInstruction("REP 1 91")
     }, 100)
+    
+  }
+
+
+  getInstructionById = (id) => {
+    return this.state.instructions[id];
+  }
+  updateInst = (id, name, val) => {
+    
+    let tempInstructions = Array.from(this.state.instructions);
+    //tempInstructions[id].args[name]=Number(val);
+    tempInstructions[id].setArg(name, val);
+
+    console.log(tempInstructions)
+    this.setState({
+      instructions: tempInstructions
+    });
     
   }
 
@@ -164,7 +182,7 @@ class App extends React.Component{
         <div className='left'>
           <header>Instructions</header>
           <Input addInstruction={this.addInstruction}/>
-          <InstructionList instructions={this.state.instructions}/>
+          <InstructionList instructions={this.state.instructions} instChange={this.updateInst}/>
         </div>
 
         <div className='right'>
@@ -178,7 +196,7 @@ class App extends React.Component{
   getCommandTemplates = () => {
     return [
       {
-        command: "GO",
+        command: "FD",
         args: [
           {
             name:"dist"
@@ -201,11 +219,16 @@ class App extends React.Component{
             penDown: data.penDown
           }
         },
+        setArg: function(n,v){
+          this.args[n] = v;
+          return `${this.command} ${this.args.dist}`;
+        },
         copy: function(){
           return {
-            command:"GO",
+            command:"FD",
             args:this.args,
-            getL3: this.getL3
+            getL3: this.getL3,
+            setArg: this.setArg
           }
         }
       },
@@ -219,16 +242,20 @@ class App extends React.Component{
         getL3: function(data){          
           data.angle += Number(this.args.deg);
         },
-        copy: function(){
+        setArg: function(n,v){
+          this.args[n] = v;
+          return `${this.command} ${v}`;
+        },copy: function(){
           return {
             command: this.command,
             args: this.args,
-            getL3: this.getL3
+            getL3: this.getL3,
+            setArg: this.setArg
           }
         }
       },
       {
-        command: "TL",
+        command: "LT",
         args: [
           {
             name:"deg"
@@ -241,18 +268,23 @@ class App extends React.Component{
           let args = this.parseArgs(t, raw);
           if(typeof args.deg === 'undefined')
             args.deg = 90;   
-          return args;      
+          return args;
        },
-       copy: function(){
+       setArg: function(n,v){
+        this.args[n] = v;
+        return `${this.command} ${v}`;
+      },
+      copy: function(){
         return {
           command: this.command,
           args: this.args,
-          getL3: this.getL3
+          getL3: this.getL3,
+          setArg: this.setArg
         }
        },
       },
       {
-        command: "TR",
+        command: "RT",
         args: [
           {
             name:"deg"
@@ -267,11 +299,16 @@ class App extends React.Component{
             args.deg = 90;   
           return args;
         },
+        setArg: function(n,v){
+          this.args[n] = v;
+          return `${this.command} ${v}`;
+        },
         copy: function(){
           return {
             command: this.command,
             args: this.args,
-            getL3: this.getL3
+            getL3: this.getL3,
+            setArg: this.setArg
           }
         }
       },
@@ -300,18 +337,21 @@ class App extends React.Component{
             }
           return insts;
         },
+        setArg: function(n,v){
+          this.args[n] = v;
+          return `${this.command} ${this.args.prev} ${this.args.count}`;
+        },
         copy: function(){
           return {
             command: this.command,
             args: this.args,
-            getL2: this.getL2
+            getL2: this.getL2,
+            setArg: this.setArg
           }
         }
       }
-
     ]
   }
-
 }
 
 

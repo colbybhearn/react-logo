@@ -25,26 +25,22 @@ class Canvas extends React.Component{
         
         //if the pen was down and is still down
         if(this.penDown && inst.penDown){
-            console.log('line')
             this.ctx.lineTo(adjP.x,adjP.y);
         }
 
         // if the pen was down and is now up
         if(this.penDown && !inst.penDown){
-            console.log('end of line, moving')
             this.ctx.stroke(); // draw the last path
             this.ctx.moveTo(adjP.x,adjP.y);
         }
 
         // if the pen was up and is still up
         if(!this.penDown && !inst.penDown){
-            console.log('moving')
             this.ctx.moveTo(adjP.x,adjP.y);    
         }
 
         // if the pen was up, but is now down
         if(!this.penDown && inst.penDown){
-            console.log('new path')
             this.ctx.beginPath();
             this.ctx.lineTo(adjP.x,adjP.y);
         }
