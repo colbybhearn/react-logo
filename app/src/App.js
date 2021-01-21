@@ -12,6 +12,20 @@ class App extends React.Component{
       instructions: [],
       commandTemplates: this.getCommandTemplates()
     }
+    this.initData();
+    
+  }
+
+  initData = () => {
+    this.data={
+      pos: {
+          x:0,
+          y:0
+      },
+      angle:90,
+      penDown: true,                        
+    }
+    return this.data;
   }
 
   addInstruction = (inst) =>{
@@ -75,7 +89,10 @@ class App extends React.Component{
       text: inst,
       command,
       args,
-      do: commandTemplate.do
+      getL2: commandTemplate.getL2,
+      getL3: commandTemplate.getL3,
+      copy: commandTemplate.copy,
+      //do: commandTemplate.do
     }
   }
 
@@ -83,7 +100,64 @@ class App extends React.Component{
     return inst.toUpperCase();
   }
 
+  getL2Instructions = () => {
+    // level 2 unwraps REP commands which repeat previous P commands X many times.
+    let l2s = [];
+    this.state.instructions.forEach((inst) => {        
+        l2s.push(...this.getL2Instruction(inst));
+    });    
+    return l2s;
+  }
+
+  getL2Instruction = (inst) =>{
+    //console.log('processInstruction: ', inst);
+    if(!inst.getL2)
+      return [inst];
+    return inst.getL2(this.state.instructions, inst);
+  }
+
+  getL3Instructions = () => {
+    let l2s = this.getL2Instructions();
+    let l3s = [];
+    this.initData();
+
+    l2s.forEach((l2) => {        
+      let l3 = this.getL3Instruction(l2);
+      if(l3)
+        l3s.push(l3);
+    });    
+    /*
+    if(this.showTurtle)
+      l3s.push({
+        pos: this.data.pos,
+        turtle: this.data.angle
+      })*/
+    return l3s;
+  }
+
+    getL3Instruction = (inst) =>{
+      return inst.getL3(this.data);
+  }
+
+  componentDidMount(){
+    setTimeout(()=>{
+      this.addInstruction("GO 200")
+      this.addInstruction("TR")
+      this.addInstruction("GO 200")
+      this.addInstruction("TR")
+      this.addInstruction("GO 200")
+      this.addInstruction("TR")
+      this.addInstruction("GO 200")
+      this.addInstruction("TR 5")      
+      this.addInstruction("REP 8 91")
+    }, 100)
+    
+  }
+
   render() {
+    let l3Instructions = this.getL3Instructions();
+    console.log(l3Instructions);
+
     return (
       <div className="App">
         
@@ -94,7 +168,7 @@ class App extends React.Component{
         </div>
 
         <div className='right'>
-          <Canvas instructions={this.state.instructions} commandTemplates={this.commandTemplates} />
+          <Canvas instructions={l3Instructions} commandTemplates={this.commandTemplates} />
         </div>
         
       </div>
@@ -110,20 +184,28 @@ class App extends React.Component{
             name:"dist"
           }
         ],        
-        do: function(state){
-          console.log(state, this.args);
+        getL3: function(data){
           // process dist, given angle
           const delta = {
-            x: this.args.dist * Math.cos(state.angle*Math.PI/180),
-            y: this.args.dist * -Math.sin(state.angle*Math.PI/180)
+            x: this.args.dist * Math.cos(data.angle*Math.PI/180),
+            y: this.args.dist * Math.sin(data.angle*Math.PI/180)
           }
-          state.pos.x= state.pos.x +delta.x;
-          state.pos.y= state.pos.y +delta.y;
-
-          state.ctx.lineTo(state.pos.x,state.pos.y);
           
-          if(state.penDown){
-            //state.ctx.stroke();
+          data.pos.x = data.pos.x + delta.x;
+          data.pos.y = data.pos.y + delta.y;
+          return {
+            pos: {
+              x: data.pos.x,
+              y: data.pos.y
+            },
+            penDown: data.penDown
+          }
+        },
+        copy: function(){
+          return {
+            command:"GO",
+            args:this.args,
+            getL3: this.getL3
           }
         }
       },
@@ -134,8 +216,15 @@ class App extends React.Component{
             name:"deg"
           }
         ],
-        do: function(state){          
-          state.angle += Number(this.args.deg);
+        getL3: function(data){          
+          data.angle += Number(this.args.deg);
+        },
+        copy: function(){
+          return {
+            command: this.command,
+            args: this.args,
+            getL3: this.getL3
+          }
         }
       },
       {
@@ -145,14 +234,21 @@ class App extends React.Component{
             name:"deg"
           }
         ],
-        do: function(state){          
-          state.angle += Number(this.args.deg);
+        getL3: function(data){          
+          data.angle += Number(this.args.deg);
         },
         parseArgs: (t, raw) => {
           let args = this.parseArgs(t, raw);
           if(typeof args.deg === 'undefined')
             args.deg = 90;   
           return args;      
+       },
+       copy: function(){
+        return {
+          command: this.command,
+          args: this.args,
+          getL3: this.getL3
+        }
        },
       },
       {
@@ -162,15 +258,22 @@ class App extends React.Component{
             name:"deg"
           }
         ],
-        do: function(state){          
-          state.angle -= Number(this.args.deg);
+        getL3: function(data){          
+          data.angle -= Number(this.args.deg);
         },
         parseArgs: (t,raw) => {
           let args = this.parseArgs(t, raw);          
           if(typeof args.deg === 'undefined')
             args.deg = 90;   
-          return args;      
-       },
+          return args;
+        },
+        copy: function(){
+          return {
+            command: this.command,
+            args: this.args,
+            getL3: this.getL3
+          }
+        }
       },
       {
         command: "REP",
@@ -182,8 +285,27 @@ class App extends React.Component{
             name: "count"
           }
         ],
-        do: function(state){
-
+        // there is no level 3 because level 2 unwraps the REP commands from level 1        
+        getL2: function(all, inst){
+          let insts = [];
+          let id = inst.id;
+          for(let c=0;c<Number(this.args.count);c++)
+            for(let p=Number(this.args.prev);p>0;p--)
+            {
+              let indexToCopy = id-p;
+              let copy = all[indexToCopy].copy();
+              copy.id = Number(all.length) + insts.length;
+              console.log(copy)
+              insts.push(copy);
+            }
+          return insts;
+        },
+        copy: function(){
+          return {
+            command: this.command,
+            args: this.args,
+            getL2: this.getL2
+          }
         }
       }
 

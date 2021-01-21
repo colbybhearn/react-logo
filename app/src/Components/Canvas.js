@@ -4,99 +4,112 @@ class Canvas extends React.Component{
 
     constructor(){
         super();        
-        this.data={
-            pos: {
-                x:0,
-                y:0
-            },
-            angle:90,
-            penDown: true,            
-        }
+        this.penDown=true;
     }
 
     processInstructions = () => {
-
-        
-        this.props.instructions.forEach((inst) => {
-            console.log('processing instruction');
+        this.props.instructions.forEach((inst) => {            
             this.processInstruction(inst);
         });
-        if(this.data.penDown)
-            this.data.ctx.stroke();
-        this.drawTurtle();
+        if(this.penDown)
+            this.ctx.stroke(); // draw the last path
+    }
+
+    processInstruction = (inst) => {
+
+        let adjP = {
+            x: this.pos.x + inst.pos.x,
+            y: this.pos.y - inst.pos.y
+        }
+        //inst with penDown means draw a line to here
+        
+        //if the pen was down and is still down
+        if(this.penDown && inst.penDown){
+            console.log('line')
+            this.ctx.lineTo(adjP.x,adjP.y);
+        }
+
+        // if the pen was down and is now up
+        if(this.penDown && !inst.penDown){
+            console.log('end of line, moving')
+            this.ctx.stroke(); // draw the last path
+            this.ctx.moveTo(adjP.x,adjP.y);
+        }
+
+        // if the pen was up and is still up
+        if(!this.penDown && !inst.penDown){
+            console.log('moving')
+            this.ctx.moveTo(adjP.x,adjP.y);    
+        }
+
+        // if the pen was up, but is now down
+        if(!this.penDown && inst.penDown){
+            console.log('new path')
+            this.ctx.beginPath();
+            this.ctx.lineTo(adjP.x,adjP.y);
+        }
     }
 
     drawTurtle = () => {
         
-        this.data.ctx.moveTo(this.data.pos.x,this.data.pos.x);
-        this.data.ctx.beginPath();
+        this.ctx.moveTo(this.pos.x,this.pos.x);
+        this.ctx.beginPath();
         const turtleRadius = 10;
 
         
-        let angle = this.data.angle-180;
+        let angle = this.angle-180;
         const p0Delta = {
             x: .5*turtleRadius * Math.cos(angle*Math.PI/180),
             y: .5*turtleRadius * -Math.sin(angle*Math.PI/180)
           };
 
-        this.data.pos.x+=p0Delta.x;
-        this.data.pos.y+=p0Delta.y;
+        this.pos.x+=p0Delta.x;
+        this.pos.y+=p0Delta.y;
 
-
-
-        angle = this.data.angle+110;
+        angle = this.angle+110;
         const p1Delta = {
             x: 1.5*turtleRadius * Math.cos(angle*Math.PI/180),
             y: 1.5*turtleRadius * -Math.sin(angle*Math.PI/180)
           };
 
         let p1= {
-            x: this.data.pos.x +p1Delta.x,
-            y: this.data.pos.y +p1Delta.y
+            x: this.pos.x +p1Delta.x,
+            y: this.pos.y +p1Delta.y
         }
 
-        angle = this.data.angle
+        angle = this.angle
         const p2Delta = {
             x: 2*turtleRadius * Math.cos(angle*Math.PI/180),
             y: 2*turtleRadius * -Math.sin(angle*Math.PI/180)
           };
 
         let p2= {
-            x: this.data.pos.x +p2Delta.x,
-            y: this.data.pos.y +p2Delta.y
+            x: this.pos.x +p2Delta.x,
+            y: this.pos.y +p2Delta.y
         }
-
         
-        angle = this.data.angle+-110
+        angle = this.angle+-110
         const p3Delta = {
             x: 1.5*turtleRadius * Math.cos(angle*Math.PI/180),
             y: 1.5*turtleRadius * -Math.sin(angle*Math.PI/180)
           };
 
         let p3= {
-            x: this.data.pos.x +p3Delta.x,
-            y: this.data.pos.y +p3Delta.y
+            x: this.pos.x +p3Delta.x,
+            y: this.pos.y +p3Delta.y
         }
-
-
-
         
-        this.data.ctx.lineTo(p1.x,p1.y);
-        this.data.ctx.lineTo(p2.x,p2.y);
-        this.data.ctx.lineTo(p3.x,p3.y);
-        this.data.ctx.lineTo(this.data.pos.x,this.data.pos.y);
-        this.data.ctx.closePath();
-        this.data.ctx.stroke();
-    }
-    
-    processInstruction = (inst) =>{
-        //console.log('processInstruction: ', inst);
-        inst.do(this.data);
-    }
+        this.ctx.lineTo(p1.x,p1.y);
+        this.ctx.lineTo(p2.x,p2.y);
+        this.ctx.lineTo(p3.x,p3.y);
+        this.ctx.lineTo(this.pos.x,this.pos.y);
+        this.ctx.closePath();
+        this.ctx.stroke();
+    }    
 
     componentDidMount = () =>{        
         this.canvas = document.getElementById("canvas");
-        this.data.ctx = this.canvas.getContext("2d");
+        this.ctx = this.canvas.getContext("2d");
         this.init();
     }
 
@@ -109,20 +122,19 @@ class Canvas extends React.Component{
     }
 
     clear = () => {
-        this.data.ctx.clearRect(0,0,this.data.ctx.canvas.width,this.data.ctx.canvas.height);
-        this.data.ctx.beginPath();
+        this.ctx.clearRect(0,0,this.ctx.canvas.width,this.ctx.canvas.height);
+        this.ctx.beginPath();
     }
 
     init = () => {
-        this.clear();
-        this.data.pos={
-            x: this.data.ctx.canvas.getBoundingClientRect().width/2,
-            y: this.data.ctx.canvas.getBoundingClientRect().height/2
+        this.clear();    
+        this.pos={
+            x: this.ctx.canvas.getBoundingClientRect().width/2,
+            y: this.ctx.canvas.getBoundingClientRect().height/2
         }
-        this.data.penDown = true;
-        this.data.angle= 90;
-        this.data.ctx.moveTo(this.data.pos.x, this.data.pos.y);
-        this.data.ctx.strokeStyle = "#FF0000";
+        this.ctx.moveTo(this.pos.x, this.pos.y);        
+        this.ctx.strokeStyle = "#009900";
+        this.instructions = this.props.instructions;
         this.processInstructions();
     }
 

@@ -14,7 +14,7 @@ class InstructionList extends React.Component {
             <div className='instructions'>
                 
                 {this.props.instructions.map(inst => (
-                <Instruction key={inst.id} text={inst.text}/>
+                    <Instruction key={inst.id} inst={inst}/>
                 ))}
 
                 
