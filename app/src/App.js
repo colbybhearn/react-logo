@@ -38,14 +38,15 @@ class App extends React.Component{
   }
 
   parseArgs = (commandTemplate, args) =>{
-    if(args.length !== commandTemplate.args.length)
-      return null;
-
     let argsObj = {};
+    if(args.length !== commandTemplate.args.length)
+      return argsObj;
+    
     // put the args in an object by name
     for(let a = 0;a<commandTemplate.args.length;a++){
       const argName = commandTemplate.args[a].name;
-      argsObj[argName] = args[a];
+      if(args.length>a)      
+        argsObj[argName] = args[a];
     }
 
     return argsObj;
@@ -63,14 +64,18 @@ class App extends React.Component{
       return;
 
     let rawArgs = parts.slice(1); // everything after the command
-    let args=this.parseArgs(commandTemplate, rawArgs);
+    let args;
+    if(commandTemplate.parseArgs)
+      args = commandTemplate.parseArgs(commandTemplate, rawArgs);
+    else
+      args =this.parseArgs(commandTemplate, rawArgs);
 
     return {
       id: this.state.instructions.length,
       text: inst,
       command,
       args,
-      process: commandTemplate.process
+      do: commandTemplate.do
     }
   }
 
@@ -104,11 +109,84 @@ class App extends React.Component{
           {
             name:"dist"
           }
+        ],        
+        do: function(state){
+          console.log(state, this.args);
+          // process dist, given angle
+          const delta = {
+            x: this.args.dist * Math.cos(state.angle*Math.PI/180),
+            y: this.args.dist * -Math.sin(state.angle*Math.PI/180)
+          }
+          state.pos.x= state.pos.x +delta.x;
+          state.pos.y= state.pos.y +delta.y;
+
+          state.ctx.lineTo(state.pos.x,state.pos.y);
+          
+          if(state.penDown){
+            //state.ctx.stroke();
+          }
+        }
+      },
+      {
+        command: "ROT",
+        args: [
+          {
+            name:"deg"
+          }
         ],
-        process: function(ctx){
-          console.log(this, ctx);
+        do: function(state){          
+          state.angle += Number(this.args.deg);
+        }
+      },
+      {
+        command: "TL",
+        args: [
+          {
+            name:"deg"
+          }
+        ],
+        do: function(state){          
+          state.angle += Number(this.args.deg);
+        },
+        parseArgs: (t, raw) => {
+          let args = this.parseArgs(t, raw);
+          if(typeof args.deg === 'undefined')
+            args.deg = 90;   
+          return args;      
+       },
+      },
+      {
+        command: "TR",
+        args: [
+          {
+            name:"deg"
+          }
+        ],
+        do: function(state){          
+          state.angle -= Number(this.args.deg);
+        },
+        parseArgs: (t,raw) => {
+          let args = this.parseArgs(t, raw);          
+          if(typeof args.deg === 'undefined')
+            args.deg = 90;   
+          return args;      
+       },
+      },
+      {
+        command: "REP",
+        args: [
+          {            
+            name: "prev"
+          },
+          {            
+            name: "count"
+          }
+        ],
+        do: function(state){
+
         }
       }
+
     ]
   }
 
