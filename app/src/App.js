@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import InstructionList from './Components/InstructionList.js'
 import Canvas from './Components/Canvas.js'
@@ -69,7 +69,7 @@ class App extends React.Component{
   parseInstructionText = inst => {
     let parts = inst.split(' ');
     parts = parts.filter((p) => {return p!==''});
-    if(parts.length==0)
+    if(parts.length===0)
       return;
     let command = parts[0];
     // find the command in the template
@@ -143,14 +143,14 @@ class App extends React.Component{
   componentDidMount(){
     setTimeout(()=>{
       this.addInstruction("FD 200")
-      //this.addInstruction("TR")
-      //this.addInstruction("GO 200")
-      //this.addInstruction("TR")
-      //this.addInstruction("GO 200")
-      //this.addInstruction("TR")
-      //this.addInstruction("GO 200")
-      //this.addInstruction("TR 5")
-      //this.addInstruction("REP 1 91")
+      this.addInstruction("RT")
+      this.addInstruction("FD 200")
+      this.addInstruction("RT")
+      this.addInstruction("FD 200")
+      this.addInstruction("RT")
+      this.addInstruction("FD 200")
+      this.addInstruction("RT 5")
+      this.addInstruction("REP 8 91")
     }, 100)
     
   }

@@ -3,10 +3,6 @@ import Instruction from './Instruction.js'
 
 class InstructionList extends React.Component {
 
-    constructor(props){
-        super(props);
-
-    }
 
     instChange = (id, name, val) => {
         this.props.instChange(id, name, val);

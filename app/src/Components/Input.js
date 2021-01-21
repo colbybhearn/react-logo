@@ -11,7 +11,9 @@ class Input extends React.Component{
 
     addInstruction = () =>{
         this.props.addInstruction(this.state.text);
-        this.state.text='';
+        this.setState(
+            {text:''}
+        );
     }
     
     
