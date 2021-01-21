@@ -23,10 +23,10 @@ class Instruction extends React.Component{
                  args.map((arg,i) => (
                      <div className='instructionArgs'>
                         <span>{arg[0]}</span>
-                        <input key={i} type='number' defaultValue={arg[1]} style={{width: 40 + 'px'}} onChange={(event) => {this.handleChange(event, arg[0])}} />
+                        <input key={this.props.inst.id +"_"+ i} type='number' defaultValue={arg[1]} style={{width: 40 + 'px'}} onChange={(event) => {this.handleChange(event, arg[0])}} />
                     </div>
                 ))} 
-                <div className='delete'>X</div>
+                <div className='delete'></div>
             </div>
         )
     }

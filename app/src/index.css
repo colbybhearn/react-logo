@@ -58,3 +58,15 @@ canvas{
 .instInput{
   width:98%
 }
+.help{
+  font-size: 12px
+}
+
+.help tr td{
+  
+}
+
+.help tr > td:nth-child(1)
+{    
+  width:90px;
+}

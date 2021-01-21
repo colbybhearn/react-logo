@@ -193,10 +193,43 @@ class App extends React.Component{
       <div className="App">
         
         <div className='left'>
+        
+
+          <header>Commands</header>
+          
+          <table className='help'>
+            <tbody>
+            <tr>
+              <td colSpan='2'>&lt;r&gt; = required argument</td>
+            </tr>
+            <tr>
+              <td colSpan='2'>[o] = optional argument</td>
+            </tr>            
+            <tr>
+              <td>FD &lt;d&gt;</td>
+              <td>Forward d units</td>
+            </tr>
+            <tr>
+              <td>LT [d=90]</td>
+              <td>Left Turn. Default d is 90°</td>
+            </tr>
+            <tr>
+              <td>RT [d=90]</td>
+              <td>Right Turn. Default d is 90°</td>
+            </tr>
+            <tr>
+              <td>REP &lt;c&gt; &lt;t&gt;</td>
+              <td>Repeat last c commands t times</td>
+            </tr>
+            </tbody>
+          </table>
+          <br/>
+
           <header>Presets</header>
           <button onClick={this.clearInstructions}>clear</button>
           <button onClick={this.loadSampleDisc}>disc</button>
-          <br/>
+          <br/><br/>
+
           <header>Instructions</header>
           <Input addInstruction={this.addInstruction}/>
           <InstructionList instructions={this.state.instructions} instChange={this.updateInst}/>
