@@ -178,7 +178,46 @@ class App extends React.Component{
       this.addInstruction("RT")
       this.addInstruction("FD 200")
     }, 100)
+  }
 
+  loadSampleSquares = () => {
+    this.clearInstructions();
+    
+    setTimeout(()=>{
+      this.runInstructionSequence(
+        [
+          "fd 20",
+          "rt",
+          "penup",
+          "pendown",
+          "rep 4 3",
+          "fd 40",
+          "rt",
+          "penup",
+          "pendown",
+          "rep 4 3",
+          "fd 60",
+          "rt",
+          "penup",
+          "pendown",
+          "rep 4 3",
+          "fd 80",
+          "rt",
+          "penup",
+          "pendown",
+          "rep 4 3"
+
+        ]
+      )
+
+      
+    }, 100)
+  }
+
+  runInstructionSequence = (arr) => {
+    arr.forEach((a) => {
+      this.addInstruction(a);
+    })
   }
 
 
@@ -239,9 +278,10 @@ class App extends React.Component{
           <br/>
 
           <header>Presets</header>
-          <button onClick={this.clearInstructions}>clear</button>
-          <button onClick={this.loadSampleDisc}>disc</button>
+          <button onClick={this.clearInstructions}>clear</button>          
           <button onClick={this.loadSampleCorner}>corner</button>
+          <button onClick={this.loadSampleSquares}>squares</button>
+          <button onClick={this.loadSampleDisc}>disc</button>
           <br/><br/>
 
           <header>Instructions</header>

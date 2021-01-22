@@ -1,16 +1,9 @@
 import React from 'react'
 
 class Canvas extends React.Component{
-
-    constructor(){
-        super();        
-        this.penDown=true;
-    }
-
      processInstructions = () => {
-        this.props.instructions.forEach(async (inst) => {            
-            this.processInstruction(inst);
-            
+        this.props.instructions.forEach((inst) => {            
+            this.processInstruction(inst);            
         }); 
 
         if(this.penDown)
@@ -18,7 +11,7 @@ class Canvas extends React.Component{
     }
 
     processInstruction = async (inst) => {
-        await new Promise(r => setTimeout(r, 1000));
+        //await new Promise(r => setTimeout(r, 200));
         if(inst.turtle){            
             this.drawTurtle(inst);
             return;
