@@ -250,7 +250,7 @@ class App extends React.Component{
           <input type='checkbox' checked="true" 
           checked={this.state.showTurtle}
           onChange={this.handleTurtleToggle}
-          />Draw Turtle
+          />Show Turtle
         </div>
 
         <div className='right'>
@@ -302,6 +302,56 @@ class App extends React.Component{
         copy: function(){
           return {
             command:"FD",
+            args:this.args,
+            getL3: this.getL3,
+            setArg: this.setArg
+          }
+        }
+      },
+      {
+        command: "PENUP",
+        args: [],        
+        getL3: function(data){          
+          data.penDown=false;
+          return {
+            pos: {
+              x: data.pos.x,
+              y: data.pos.y
+            },
+            penDown: data.penDown
+          }
+        },
+        setArg: function(n,v){          
+          return `${this.command}`;
+        },
+        copy: function(){
+          return {
+            command:this.command,
+            args:this.args,
+            getL3: this.getL3,
+            setArg: this.setArg
+          }
+        }
+      },
+      {
+        command: "PENDOWN",
+        args: [],        
+        getL3: function(data){          
+          data.penDown=true;
+          return {
+            pos: {
+              x: data.pos.x,
+              y: data.pos.y
+            },
+            penDown: data.penDown
+          }
+        },
+        setArg: function(n,v){          
+          return `${this.command}`;
+        },
+        copy: function(){
+          return {
+            command:this.command,
             args:this.args,
             getL3: this.getL3,
             setArg: this.setArg
@@ -406,6 +456,8 @@ class App extends React.Component{
             for(let p=Number(this.args.prev);p>0;p--)
             {
               let indexToCopy = id-p;
+              if(indexToCopy < 0 && indexToCopy > all.length-1)
+                continue;
               let copy = all[indexToCopy].copy();
               copy.id = Number(all.length) + insts.length;
               console.log(copy)

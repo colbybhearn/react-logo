@@ -7,17 +7,18 @@ class Canvas extends React.Component{
         this.penDown=true;
     }
 
-    processInstructions = () => {
-        this.props.instructions.forEach((inst) => {            
+     processInstructions = () => {
+        this.props.instructions.forEach(async (inst) => {            
             this.processInstruction(inst);
-        });
+            
+        }); 
 
         if(this.penDown)
             this.ctx.stroke(); // draw the last path
     }
 
-    processInstruction = (inst) => {
-
+    processInstruction = async (inst) => {
+        await new Promise(r => setTimeout(r, 1000));
         if(inst.turtle){            
             this.drawTurtle(inst);
             return;
@@ -31,25 +32,31 @@ class Canvas extends React.Component{
         
         //if the pen was down and is still down
         if(this.penDown && inst.penDown){
+            console.log('line')
             this.ctx.lineTo(adjP.x,adjP.y);
         }
 
         // if the pen was down and is now up
         if(this.penDown && !inst.penDown){
+            console.log('pen raised')
             this.ctx.stroke(); // draw the last path
             this.ctx.moveTo(adjP.x,adjP.y);
         }
 
         // if the pen was up and is still up
         if(!this.penDown && !inst.penDown){
+            console.log('gap')
             this.ctx.moveTo(adjP.x,adjP.y);    
         }
 
         // if the pen was up, but is now down
         if(!this.penDown && inst.penDown){
+            console.log('pen lowered')
             this.ctx.beginPath();
             this.ctx.lineTo(adjP.x,adjP.y);
         }
+
+        this.penDown = inst.penDown;
     }
 
     drawTurtle = (inst) => {
@@ -115,7 +122,12 @@ class Canvas extends React.Component{
         this.ctx.lineTo(p3.x,p3.y);
         this.ctx.lineTo(adjP.x,adjP.y);
         this.ctx.closePath();
-        this.ctx.stroke();
+        if(this.penDown){
+            this.ctx.fillStyle = "green";
+            this.ctx.fill();
+        }            
+        else
+            this.ctx.stroke();
         //this.penDown=false;
     }    
 
@@ -144,6 +156,7 @@ class Canvas extends React.Component{
             x: this.ctx.canvas.getBoundingClientRect().width/2,
             y: this.ctx.canvas.getBoundingClientRect().height/2
         }
+        this.penDown=true;
         this.ctx.moveTo(this.pos.x, this.pos.y);        
         this.ctx.strokeStyle = "#009900";
         this.instructions = this.props.instructions;
