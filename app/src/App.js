@@ -287,7 +287,7 @@ class App extends React.Component{
           <header>Instructions</header>
           <Input addInstruction={this.addInstruction}/>
           <InstructionList instructions={this.state.instructions} instChange={this.updateInst}/>
-          <input type='checkbox' checked="true" 
+          <input type='checkbox'
           checked={this.state.showTurtle}
           onChange={this.handleTurtleToggle}
           />Show Turtle
